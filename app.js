@@ -54,14 +54,10 @@ operators.forEach(operator => {
 });
 
 allClear.addEventListener('click', (event) => {
-    if (!value) { // Checks to see if it's true that the value variable is empty and then proceeds to clear out total and symbol variable and reset button text.
-        total = '';
-        symbol = '';
-        allClear.textContent = 'AC';
-    } 
-    else {
-        value = '';
-    }
+    total = '';
+    symbol = '';
+    value = '';
+    allClear.textContent = 'AC';
     display.textContent = 0;
 });
 
