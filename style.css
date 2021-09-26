@@ -1,0 +1,125 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    font-size: 35px;
+}
+
+body {
+    height: 812px;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calculator {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 375px;
+    background-color: black;
+}
+
+.display {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    text-align: right;
+    height: 140px;
+    margin-top: 150px;
+    padding: 0 20px 5px 0;
+    color: white;
+    font-size: 95px;
+    font-weight: light;
+}
+
+.row {
+  flex-basis: 25%;
+  display: flex;
+  align-items: flex;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+}
+
+.ac, .plus-minus, .modulo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    width: 80px;
+    margin: 10px 0;
+    border-radius: 50%;
+    background-color: #bdbdbd;
+    color: black;
+}
+
+.operator, .plus-minus {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    width: 80px;
+    margin: 10px 0;
+    border-radius: 50%;
+    background-color: #f39109;
+    color: white;
+}
+
+.operator:active {
+    background-color: white;
+    color: #f39109;
+}
+
+.number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    width: 80px;
+    margin: 10px 0;
+    border-radius: 50%;
+    background-color: #2f2f2f;
+    color: white;  
+}
+
+.number:active {
+    background-color: #686868;
+}
+
+.period {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 80px;
+    width: 80px;
+    margin: 10px 0;
+    padding-bottom: 10px;
+    border-radius: 50%;
+    background-color: #353535;
+    color: white;
+}
+
+.zero {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 80px;
+    width: 170px;
+    padding-left: 30px;
+    border-radius: 50px;
+    background-color: #353535;
+    color: white;
+}
+
+.zero-parent {
+    flex-grow: 2;
+    justify-content: space-around;
+    margin-left: 2.5px;
+}
+
