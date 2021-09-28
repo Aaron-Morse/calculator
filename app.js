@@ -1,4 +1,5 @@
 // Element selectors
+const calculator = document.querySelector('.calculator');
 const display = document.querySelector('.display');
 const allClear = document.querySelector('.ac');
 const plusMinus = document.querySelector('.plus-minus');
@@ -18,12 +19,13 @@ let value = ''; // Secondary value for equation
 
 // Functions
 function math() {
-    if (symbol === modulo) total = Number(total) % Number(value);
-    if (symbol === divide) total = Number(total) / Number(value);
-    if (symbol === times) total = Number(total) * Number(value);
-    if (symbol === minus) total = Number(total) - Number(value);
-    if (symbol === plus) total = Number(total) + Number(value);
-    display.textContent = total;
+    // Converting results to string so the regex replace will work and add comma separators
+    if (symbol === modulo) total = String(Number(total) % Number(value));
+    if (symbol === divide) total = String(Number(total) / Number(value));
+    if (symbol === times) total = String(Number(total) * Number(value));
+    if (symbol === minus) total = String(Number(total) - Number(value));
+    if (symbol === plus) total = String(Number(total) + Number(value));
+    display.textContent = total.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 // Event listeners
@@ -31,12 +33,12 @@ numbers.forEach(number => {
     number.addEventListener('click', (event) => {
         if (!symbol) { // Checks to see if it is true that the symbol variable is empty
             total += event.target.textContent; // The value variable is set to a string of numbers to build the first part of the equation.
-            display.textContent = total; // The display's text content is updated to reflect the numbers being selected.
+            display.textContent = total.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // The display's text content is updated to reflect the numbers being selected.
             allClear.textContent = 'C'; // The all clear button's text is updated to reflect 'C' which will first clear the value and not the entire equation.   
         } 
         else {
             value += event.target.textContent; // The value variable is set to a string of numbers to build the first part of the equation.
-            display.textContent = value; // The display's text content is updated to reflect the numbers being selected.
+            display.textContent = value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // The display's text content is updated to reflect the numbers being selected.
         }
     });
 });
@@ -68,8 +70,13 @@ plusMinus.addEventListener('click', (event) => {
     else {
         value > 0 ? value = `-${value}` : value = value.replace('-', '');
     }
-    display.textContent = !value ? total : value;
+    display.textContent = !value ? total.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 });
+
+
+
+
+
 
 
 
