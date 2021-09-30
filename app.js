@@ -64,14 +64,25 @@ allClear.addEventListener('click', (event) => {
 });
 
 plusMinus.addEventListener('click', (event) => {
-    if (!value) {
-        total > 0 ? total = `-${total}`: total = total.replace('-', '');
-    } 
-    else {
-        value > 0 ? value = `-${value}` : value = value.replace('-', '');
+    if (!total && !symbol && !value) {
+        event.preventDefault();
     }
-    display.textContent = !value ? total.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    if (!value) {
+       total = String(Number(total) * -1);
+       display.textContent = total.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    if (value && display.textContent === value) {
+        value = String(Number(value) * -1);
+        display.textContent = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+     }
+     if (total && value && display.textContent === total) {
+        total = String(Number(total) * -1);
+       display.textContent = total.replace(/\B(?=(\d{3})+(?!\d))/g, ','); 
+     }
 });
+
+
+
 
 
 
