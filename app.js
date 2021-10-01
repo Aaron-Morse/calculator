@@ -60,25 +60,36 @@ allClear.addEventListener('click', (event) => {
     symbol = '';
     value = '';
     allClear.textContent = 'AC';
+    display.style.fontSize = '85px';
     display.textContent = 0;
 });
 
 plusMinus.addEventListener('click', (event) => {
-    if (!total && !symbol && !value) {
+    if (!total && !symbol && !value) { // Prevents the default actions if all variables are empty
         event.preventDefault();
     }
-    if (!value) {
+    if (!value) { // Updates the total variable if the value variable is empty
        total = String(Number(total) * -1);
        display.textContent = total.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
-    if (value && display.textContent === value) {
+    if (value && display.textContent === value) { // Updates the value variable if it has a value and it matches the display content
         value = String(Number(value) * -1);
         display.textContent = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
      }
-     if (total && value && display.textContent === total) {
+     if (total && value && display.textContent === total) { // Updates the total variable if the total and value variable are populated and the total matches the display content
         total = String(Number(total) * -1);
        display.textContent = total.replace(/\B(?=(\d{3})+(?!\d))/g, ','); 
      }
+});
+
+calculator.addEventListener('click', (event) => { // I need to play around with the sizes to make them fit better  
+    if (event.target.className === 'number') {
+        const length = display.textContent.length;
+        if (length > 6) display.style.fontSize = '70px';
+        if (length > 7 && length < 10) display.style.fontSize = '55px';
+        if (length >= 10) display.style.fontSize = '50px';
+        if (length > 10) display.style.fontSize = '48px';
+    }
 });
 
 
