@@ -34,14 +34,19 @@ numbers.forEach(number => {
         if (display.textContent === '0' && event.target.textContent === '0') { // Checks to see if display = 0 and number = 0 to block 0 usage
             return event.preventDefault();
         }
-        if (!symbol) { // Checks to see if it is true that the symbol variable is empty
-            total += event.target.textContent; // The value variable is set to a string of numbers to build the first part of the equation.
-            display.textContent = total.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // The display's text content is updated to reflect the numbers being selected.
-            allClear.textContent = 'C'; // The all clear button's text is updated to reflect 'C' which will first clear the value and not the entire equation.   
-        } 
-        if (total && symbol) {
-            value += event.target.textContent; // The value variable is set to a string of numbers to build the first part of the equation.
-            display.textContent = value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // The display's text content is updated to reflect the numbers being selected.
+        if (display.textContent.length < 11) {
+            if (!symbol) { // Checks to see if it is true that the symbol variable is empty
+                total += event.target.textContent; // The value variable is set to a string of numbers to build the first part of the equation.
+                display.textContent = total.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // The display's text content is updated to reflect the numbers being selected.
+                allClear.textContent = 'C'; // The all clear button's text is updated to reflect 'C' which will first clear the value and not the entire equation.   
+            } 
+            if (total && symbol) {
+                value += event.target.textContent; // The value variable is set to a string of numbers to build the first part of the equation.
+                display.textContent = value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // The display's text content is updated to reflect the numbers being selected.
+            }
+        else {
+            return event.preventDefault();
+        }
         }
     });
 });
