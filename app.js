@@ -64,7 +64,7 @@ class Calculator {
   handleNumber(event) {
     const number = event.target.dataset.value;
 
-    // If last action was '=', start new calculation
+    // Start new calculation after '='
     if (this.isResult && !this.operator) {
       this.value = number;
       this.nextValue = null;
@@ -73,54 +73,31 @@ class Calculator {
       return;
     }
 
+    // If entering first number or after result, replace value
     if (!this.operator) {
-      // No operator selected yet, update this.value
-      if (this.value === 0 || this.value === "0" || this.isResult) {
-        this.value = number;
-        this.isResult = false;
-      } else {
-        this.value += number;
-      }
+      this.value =
+        this.value === 0 || this.value === "0" || this.isResult
+          ? number
+          : this.value + number;
+      this.isResult = false;
       this.renderDisplayElement(this.value);
-    } else {
-      // Operator selected, update this.nextValue
-      if (
-        this.nextValue === null ||
-        this.nextValue === 0 ||
-        this.nextValue === "0"
-      ) {
-        this.nextValue = number;
-      } else {
-        this.nextValue += number;
-      }
-      this.renderDisplayElement(this.nextValue);
+      return;
     }
+
+    // If entering next value after operator
+    this.nextValue =
+      this.nextValue === null || this.nextValue === "0"
+        ? number
+        : this.nextValue + number;
+    this.renderDisplayElement(this.nextValue);
   }
 
   handleOperator(event) {
     const operator = event.target.dataset.value;
 
-    if (operator !== "=") {
-      // If operator is pressed after result, allow chaining
-      if (this.isResult) {
-        this.isResult = false;
-        this.nextValue = null;
-      }
-      // If operator is pressed after entering nextValue, calculate first
+    if (operator === "=") {
+      // Perform or repeat calculation
       if (this.operator && this.nextValue !== null) {
-        this.handleCalculation(
-          this.value,
-          this.operator,
-          this.nextValue
-        );
-        this.value = this.displayElement.textContent;
-        this.nextValue = null;
-      }
-      this.operator = operator;
-    } else {
-      // '=' pressed
-      if (this.operator && this.nextValue !== null) {
-        // Normal calculation
         this.handleCalculation(
           this.value,
           this.operator,
@@ -129,27 +106,38 @@ class Calculator {
         this.lastOperator = this.operator;
         this.lastOperand = this.nextValue;
         this.value = this.displayElement.textContent;
-        this.operator = "";
-        this.nextValue = null;
-        this.isResult = true;
       } else if (
         this.isResult &&
         this.lastOperator &&
         this.lastOperand !== null
       ) {
-        // Repeat last calculation
         this.handleCalculation(
           this.value,
           this.lastOperator,
           this.lastOperand
         );
         this.value = this.displayElement.textContent;
-        this.operator = "";
-        this.nextValue = null;
-        this.isResult = true;
       }
-      // If '=' is pressed without enough info, do nothing
+      this.operator = "";
+      this.nextValue = null;
+      this.isResult = true;
+      return;
     }
+
+    // If chaining operations, calculate first
+    if (this.operator && this.nextValue !== null) {
+      this.handleCalculation(
+        this.value,
+        this.operator,
+        this.nextValue
+      );
+      this.value = this.displayElement.textContent;
+      this.nextValue = null;
+    }
+
+    // Set new operator and prepare for next value
+    this.operator = operator;
+    this.isResult = false;
   }
 
   handleCalculation(n1, operator, n2) {
