@@ -1,74 +1,186 @@
-// Element selectors
-const display = document.querySelector('.display');
-const allClear = document.querySelector('.ac');
-const plusMinus = document.querySelector('.plus-minus');
-const operators = document.querySelectorAll('.operator');
-const numbers = document.querySelectorAll('.number');
-const modulo = document.querySelector('.modulo');
-const divide = document.querySelector('.divide');
-const times = document.querySelector('.times');
-const minus = document.querySelector('.minus');
-const plus = document.querySelector('.plus');
-const equals = document.querySelector('.equals');
+class Calculator {
+  constructor() {
+    // Store DOM elements as properties
+    this.displayElement = document.querySelector(".display");
+    this.allClearButton = document.querySelector(".ac");
+    this.plusMinusButton = document.querySelector(".plus-minus");
+    this.numberButtons = document.querySelectorAll(".number");
+    this.operatorButtons = document.querySelectorAll(".operator");
 
-let total = '';
-let symbol = '';
-let value = '';
+    // State variables
+    this.value = 0; // Current value/result
+    this.nextValue = null; // Value being entered after operator
+    this.operator = ""; // Current operator
+    this.lastOperator = null; // Last operator used (for repeated '=')
+    this.lastOperand = null; // Last operand used (for repeated '=')
+    this.isResult = false; // Flag to know if last action was '='
 
-// Functions
-function math() {
-    if (symbol === modulo) total = Number(total) % Number(value);
-    if (symbol === divide) total = Number(total) / Number(value);
-    if (symbol === times) total = Number(total) * Number(value);
-    if (symbol === minus) total = Number(total) - Number(value);
-    if (symbol === plus) total = Number(total) + Number(value);
-    // value = '';
-    // symbol = '';
-    display.textContent = total;
+    this.renderDisplayElement(this.value);
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    this.allClearButton.addEventListener("click", (e) => {
+      this.handleAllClear(e);
+    });
+
+    this.plusMinusButton.addEventListener("click", () => {
+      this.handlePlusMinus();
+    });
+
+    this.numberButtons.forEach((btn) => {
+      btn.addEventListener("click", (e) => this.handleNumber(e));
+    });
+
+    this.operatorButtons.forEach((btn) => {
+      btn.addEventListener("click", (e) => this.handleOperator(e));
+    });
+  }
+
+  renderDisplayElement(value) {
+    this.displayElement.textContent = value;
+  }
+
+  handleAllClear(event) {
+    this.value = 0;
+    this.nextValue = null;
+    this.operator = "";
+    this.lastOperator = null;
+    this.lastOperand = null;
+    this.isResult = false;
+    this.renderDisplayElement(this.value);
+  }
+
+  handlePlusMinus() {
+    if (this.operator && this.nextValue !== null) {
+      this.nextValue = String(Number(this.nextValue) * -1);
+      this.renderDisplayElement(this.nextValue);
+    } else {
+      this.value = String(Number(this.value) * -1);
+      this.renderDisplayElement(this.value);
+    }
+  }
+
+  handleNumber(event) {
+    const number = event.target.dataset.value;
+
+    // If last action was '=', start new calculation
+    if (this.isResult && !this.operator) {
+      this.value = number;
+      this.nextValue = null;
+      this.isResult = false;
+      this.renderDisplayElement(this.value);
+      return;
+    }
+
+    if (!this.operator) {
+      // No operator selected yet, update this.value
+      if (this.value === 0 || this.value === "0" || this.isResult) {
+        this.value = number;
+        this.isResult = false;
+      } else {
+        this.value += number;
+      }
+      this.renderDisplayElement(this.value);
+    } else {
+      // Operator selected, update this.nextValue
+      if (
+        this.nextValue === null ||
+        this.nextValue === 0 ||
+        this.nextValue === "0"
+      ) {
+        this.nextValue = number;
+      } else {
+        this.nextValue += number;
+      }
+      this.renderDisplayElement(this.nextValue);
+    }
+  }
+
+  handleOperator(event) {
+    const operator = event.target.dataset.value;
+
+    if (operator !== "=") {
+      // If operator is pressed after result, allow chaining
+      if (this.isResult) {
+        this.isResult = false;
+        this.nextValue = null;
+      }
+      // If operator is pressed after entering nextValue, calculate first
+      if (this.operator && this.nextValue !== null) {
+        this.handleCalculation(
+          this.value,
+          this.operator,
+          this.nextValue
+        );
+        this.value = this.displayElement.textContent;
+        this.nextValue = null;
+      }
+      this.operator = operator;
+    } else {
+      // '=' pressed
+      if (this.operator && this.nextValue !== null) {
+        // Normal calculation
+        this.handleCalculation(
+          this.value,
+          this.operator,
+          this.nextValue
+        );
+        this.lastOperator = this.operator;
+        this.lastOperand = this.nextValue;
+        this.value = this.displayElement.textContent;
+        this.operator = "";
+        this.nextValue = null;
+        this.isResult = true;
+      } else if (
+        this.isResult &&
+        this.lastOperator &&
+        this.lastOperand !== null
+      ) {
+        // Repeat last calculation
+        this.handleCalculation(
+          this.value,
+          this.lastOperator,
+          this.lastOperand
+        );
+        this.value = this.displayElement.textContent;
+        this.operator = "";
+        this.nextValue = null;
+        this.isResult = true;
+      }
+      // If '=' is pressed without enough info, do nothing
+    }
+  }
+
+  handleCalculation(n1, operator, n2) {
+    const num1 = Number(n1);
+    const num2 = Number(n2);
+    let result;
+
+    switch (operator) {
+      case "+":
+        result = num1 + num2;
+        break;
+      case "-":
+        result = num1 - num2;
+        break;
+      case "*":
+        result = num1 * num2;
+        break;
+      case "/":
+        result = num2 !== 0 ? num1 / num2 : "Error";
+        break;
+      case "%":
+        result = num1 % num2;
+        break;
+      default:
+        result = this.value;
+    }
+
+    this.value = result;
+    this.renderDisplayElement(result);
+  }
 }
 
-// Event listeners
-numbers.forEach(number => {
-    number.addEventListener('click', (event) => {
-        if (!symbol) { // Checks to see if it is true that the symbol variable is empty
-            total += event.target.textContent; // The value variable is set to a string of numbers to build the first part of the equation.
-            display.textContent = total; // The display's text content is updated to reflect the numbers being selected.
-            allClear.textContent = 'C'; // The all clear button's text is updated to reflect 'C' which will first clear the value and not the entire equation.   
-        } else {
-            value += event.target.textContent; // The value variable is set to a string of numbers to build the first part of the equation.
-            display.textContent = value; // The display's text content is updated to reflect the numbers being selected.
-        }
-    });
-});
-
-operators.forEach(operator => {
-    operator.addEventListener('click', (event) => {
-        if (event.target !== equals) {
-            symbol = event.target;
-            value = ''; // Clears value variable to allow for the equals operator to contiunually run the previous problem.
-        }
-        if (event.target === equals) {
-            math();
-        }
-    });
-});
-
-allClear.addEventListener('click', (event) => {
-    if (!value) { // Checks to see if it's true that the value variable is empty and then proceeds to clear out total and symbol variable and reset button text.
-        total = '';
-        symbol = '';
-        allClear.textContent = 'AC';
-    } else {
-        value = '';
-    }
-    display.textContent = 0;
-});
-
-plusMinus.addEventListener('click', (event) => {
-
-});
-
-
-
-
-
+// Usage
+const calc = new Calculator();
