@@ -36,7 +36,18 @@ class Calculator {
   }
 
   renderDisplayElement(value) {
+    this.adjustFontSize(String(value));
     this.displayElement.textContent = value;
+  }
+
+  adjustFontSize(str) {
+    let fontSize = 85;
+    if (str.length > 6) fontSize -= 10;
+    if (str.length > 7) fontSize -= 10;
+    if (str.length > 8) fontSize -= 10;
+    if (str.length > 9) fontSize -= 8;
+    if (str.length > 10) fontSize -= 8;
+    this.displayElement.style.fontSize = `${fontSize}px`;
   }
 
   handleAllClear(event) {
