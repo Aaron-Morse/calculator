@@ -10,10 +10,8 @@ class Calculator {
     // State variables
     this.value = 0; // Current value/result
     this.nextValue = null; // Value being entered after operator
-    this.operator = ""; // Current operator
-    this.lastOperator = null; // Last operator used (for repeated '=')
-    this.lastOperand = null; // Last operand used (for repeated '=')
-    this.isResult = false; // Flag to know if last action was '='
+    this.operator = null; // initial operator
+    this.operand = null; // Current operand
 
     this.renderDisplayElement(this.value);
     this.bindEvents();
@@ -44,10 +42,8 @@ class Calculator {
   handleAllClear(event) {
     this.value = 0;
     this.nextValue = null;
-    this.operator = "";
-    this.lastOperator = null;
-    this.lastOperand = null;
-    this.isResult = false;
+    this.operator = null;
+    this.operand = null;
     this.renderDisplayElement(this.value);
   }
 
@@ -64,80 +60,55 @@ class Calculator {
   handleNumber(event) {
     const number = event.target.dataset.value;
 
-    // Start new calculation after '='
-    if (this.isResult && !this.operator) {
-      this.value = number;
-      this.nextValue = null;
-      this.isResult = false;
+    if (this.operator === null) {
+      if (this.value === 0 && number !== "0") {
+        this.value = number;
+      } else if (this.value !== 0) {
+        this.value += number;
+      }
       this.renderDisplayElement(this.value);
-      return;
     }
 
-    // If entering first number or after result, replace value
-    if (!this.operator) {
-      this.value =
-        this.value === 0 || this.value === "0" || this.isResult
-          ? number
-          : this.value + number;
-      this.isResult = false;
-      this.renderDisplayElement(this.value);
-      return;
+    if (this.operator) {
+      if (this.nextValue === null && number !== "0") {
+        this.nextValue = number;
+      } else if (this.nextValue !== null) {
+        this.nextValue += number;
+      }
+      this.renderDisplayElement(
+        !this.nextValue ? this.value : this.nextValue
+      );
     }
-
-    // If entering next value after operator
-    this.nextValue =
-      this.nextValue === null || this.nextValue === "0"
-        ? number
-        : this.nextValue + number;
-    this.renderDisplayElement(this.nextValue);
   }
 
   handleOperator(event) {
     const operator = event.target.dataset.value;
-
-    if (operator === "=") {
-      // Perform or repeat calculation
-      if (this.operator && this.nextValue !== null) {
-        this.handleCalculation(
-          this.value,
-          this.operator,
-          this.nextValue
-        );
-        this.lastOperator = this.operator;
-        this.lastOperand = this.nextValue;
-        this.value = this.displayElement.textContent;
-      } else if (
-        this.isResult &&
-        this.lastOperator &&
-        this.lastOperand !== null
-      ) {
-        this.handleCalculation(
-          this.value,
-          this.lastOperator,
-          this.lastOperand
-        );
-        this.value = this.displayElement.textContent;
-      }
-      this.operator = "";
-      this.nextValue = null;
-      this.isResult = true;
-      return;
+    // Sets initial operator
+    if (this.operator === null && operator !== "=") {
+      this.operator = operator;
     }
-
-    // If chaining operations, calculate first
-    if (this.operator && this.nextValue !== null) {
+    // Checks if operator is "=" and there isn't an operand and calculates
+    if (operator === "=" && this.operand === null) {
       this.handleCalculation(
         this.value,
         this.operator,
         this.nextValue
       );
-      this.value = this.displayElement.textContent;
-      this.nextValue = null;
+      return;
     }
-
-    // Set new operator and prepare for next value
-    this.operator = operator;
-    this.isResult = false;
+    // Checks if operator is "=" and operand is avaiable and continues to compute
+    if (operator === "=" && this.operand !== null) {
+      this.handleCalculation(
+        this.operand,
+        this.operator,
+        this.nextValue
+      );
+    }
+    // Checks if operator isn't blank and operator isn't "=", sets next value to null and the operator to the new symbol
+    if (this.operator !== null && operator !== "=") {
+      this.nextValue = null;
+      this.operator = operator;
+    }
   }
 
   handleCalculation(n1, operator, n2) {
@@ -164,9 +135,8 @@ class Calculator {
       default:
         result = this.value;
     }
-
-    this.value = result;
-    this.renderDisplayElement(result);
+    this.operand = result;
+    this.renderDisplayElement(this.operand);
   }
 }
 
