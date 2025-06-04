@@ -38,6 +38,7 @@ class Calculator {
   renderDisplayElement(value) {
     value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     this.adjustFontSize(String(value));
+    console.log("Number len: ", value.length);
     this.displayElement.textContent = value;
   }
 
@@ -47,7 +48,12 @@ class Calculator {
     if (str.length > 7) fontSize -= 8;
     if (str.length > 8) fontSize -= 6;
     if (str.length > 9) fontSize -= 6;
-    if (str.length > 10) fontSize -= 6;
+    if (str.length > 10) fontSize -= 5;
+    if (str.length > 11) fontSize -= 5;
+    if (str.length > 12) fontSize -= 4;
+    if (str.length > 13) fontSize -= 4;
+    if (str.length > 14) fontSize -= 2;
+    console.log("Font size: ", fontSize);
     this.displayElement.style.fontSize = `${fontSize}px`;
   }
 
