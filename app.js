@@ -8,40 +8,44 @@ class Calculator {
     this.operatorButtons = document.querySelectorAll(".operator");
 
     // State variables
-    this.value = 0; // Current value/result
-    this.nextValue = null; // Value being entered after operator
-    this.operator = null; // initial operator
-    this.operand = null; // Current operand
+    this.operand = 0; // Current operand/output after computation
+    this.operator = null; // Initial operator
+    this.nextOperand = null; // Operand being entered after operator
+    this.output = null; // Initial output
 
-    this.renderDisplayElement(this.value);
+    this.renderDisplayElement(this.operand);
     this.bindEvents();
   }
 
   bindEvents() {
-    this.allClearButton.addEventListener("click", (e) => {
-      this.handleAllClear(e);
+    this.allClearButton.addEventListener("click", (event) => {
+      this.handleAllClear(event);
     });
 
     this.plusMinusButton.addEventListener("click", () => {
       this.handlePlusMinus();
     });
 
-    this.numberButtons.forEach((btn) => {
-      btn.addEventListener("click", (e) => this.handleNumber(e));
+    this.numberButtons.forEach((button) => {
+      button.addEventListener("click", (event) =>
+        this.handleNumber(event)
+      );
     });
 
-    this.operatorButtons.forEach((btn) => {
-      btn.addEventListener("click", (e) => this.handleOperator(e));
+    this.operatorButtons.forEach((button) => {
+      button.addEventListener("click", (event) =>
+        this.handleOperator(event)
+      );
     });
   }
 
   renderDisplayElement(value) {
-    value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    value = Intl.NumberFormat().format(value);
     this.adjustFontSize(String(value));
-    console.log("Number len: ", value.length);
     this.displayElement.textContent = value;
   }
 
+  // Updated the fontSize to be a multiplier
   adjustFontSize(str) {
     let fontSize = 85;
     if (str.length > 6) fontSize -= 8;
@@ -58,20 +62,20 @@ class Calculator {
   }
 
   handleAllClear(event) {
-    this.value = 0;
-    this.nextValue = null;
+    this.operand = 0;
+    this.nextOperand = null;
     this.operator = null;
-    this.operand = null;
-    this.renderDisplayElement(this.value);
+    this.output = null;
+    this.renderDisplayElement(this.operand);
   }
 
   handlePlusMinus() {
-    if (this.operator && this.nextValue !== null) {
-      this.nextValue = String(Number(this.nextValue) * -1);
-      this.renderDisplayElement(this.nextValue);
+    if (this.operator && this.nextOperand !== null) {
+      this.nextOperand = String(Number(this.nextOperand) * -1);
+      this.renderDisplayElement(this.nextOperand);
     } else {
-      this.value = String(Number(this.value) * -1);
-      this.renderDisplayElement(this.value);
+      this.operand = String(Number(this.operand) * -1);
+      this.renderDisplayElement(this.operand);
     }
   }
 
@@ -79,22 +83,22 @@ class Calculator {
     const number = event.target.dataset.value;
 
     if (this.operator === null) {
-      if (this.value === 0 && number !== "0") {
-        this.value = number;
-      } else if (this.value !== 0) {
-        this.value += number;
+      if (this.operand === 0 && number !== "0") {
+        this.operand = number;
+      } else if (this.operand !== 0) {
+        this.operand += number;
       }
-      this.renderDisplayElement(this.value);
+      this.renderDisplayElement(this.operand);
     }
 
     if (this.operator) {
-      if (this.nextValue === null && number !== "0") {
-        this.nextValue = number;
-      } else if (this.nextValue !== null) {
-        this.nextValue += number;
+      if (this.nextOperand === null && number !== "0") {
+        this.nextOperand = number;
+      } else if (this.nextOperand !== null) {
+        this.nextOperand += number;
       }
       this.renderDisplayElement(
-        !this.nextValue ? this.value : this.nextValue
+        !this.nextOperand ? this.operand : this.nextOperand
       );
     }
   }
@@ -106,25 +110,25 @@ class Calculator {
       this.operator = operator;
     }
     // Checks if operator is "=" and there isn't an operand and calculates
-    if (operator === "=" && this.operand === null) {
+    if (operator === "=" && this.output === null) {
       this.handleCalculation(
-        this.value,
+        this.operand,
         this.operator,
-        this.nextValue
+        this.nextOperand
       );
       return;
     }
     // Checks if operator is "=" and operand is avaiable and continues to compute
-    if (operator === "=" && this.operand !== null) {
+    if (operator === "=" && this.output !== null) {
       this.handleCalculation(
-        this.operand,
+        this.output,
         this.operator,
-        this.nextValue
+        this.nextOperand
       );
     }
     // Checks if operator isn't blank and operator isn't "=", sets next value to null and the operator to the new symbol
     if (this.operator !== null && operator !== "=") {
-      this.nextValue = null;
+      this.nextOperand = null;
       this.operator = operator;
     }
   }
@@ -151,10 +155,10 @@ class Calculator {
         result = num1 % num2;
         break;
       default:
-        result = this.value;
+        result = this.operand;
     }
-    this.operand = result;
-    this.renderDisplayElement(this.operand);
+    this.output = result;
+    this.renderDisplayElement(this.output);
   }
 }
 
